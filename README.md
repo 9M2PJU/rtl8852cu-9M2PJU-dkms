@@ -12,7 +12,8 @@
 [![Driver Version](https://img.shields.io/badge/Realtek_Base-v1.19.2.1_(20240510)-00ADD8?style=for-the-badge)](#about)
 
 [✨ What's Changed](#-whats-changed-in-this-fork) •
-[⚡ Quick Install](#-quick-installation) •
+[🪄 1-Line Interactive Installer](#-1-line-interactive-installer-recommended) •
+[⚡ Manual / AUR Install](#-quick-installation) •
 [🚀 USB 3.0 High-Speed Mode](#-usb-30-superspeed-tuning) •
 [🔌 Supported Devices](#-supported-usb-devices) •
 [🛠️ Troubleshooting](#️-troubleshooting--tips)
@@ -41,6 +42,7 @@
 | **Removed `strncpy()` Kernel API Fix** | `core/rtw_debug.c`, `os_dep/linux/ioctl_cfg80211.c`, `os_dep/linux/ioctl_linux.c`, `os_dep/linux/os_intfs.c`, `os_dep/linux/rtw_cfgvendor.c`, `os_dep/linux/usb_intf.c`, `phl/pltfm_ops_linux.h` | Replaced deprecated/removed kernel `strncpy()` calls with `strscpy()`, `memcpy()`, and an inline `_os_strncpy()` helper so Clang/LLVM and modern kernels compile without `Unknown symbol strncpy` or implicit-declaration errors. |
 | **PPPoE Header & `CONFIG_BR_EXT` Fix** | `core/rtw_br_ext.c`, `core/rtw_xmit.c`, `Makefile` | Uses wire-layout byte offsets (`RTW_PPPOE_TAG` / `RTW_PPPOE_TAG_DATA`) for hidden kernel `pppoe_hdr` fields, disables `CONFIG_BR_EXT` cleanly, and adds a `#else` stub + `#ifdef CONFIG_BR_EXT` guard for `core_br_client_tx` (fixes `Unknown symbol core_br_client_tx`). |
 | **Clean DKMS Config** | `dkms.conf` | Removed the deprecated `CLEAN` directive that caused DKMS warnings on modern `dkms` versions. |
+| **Interactive 1-Line Installer** | `setup.sh` | Added guided `curl \| bash` installer that auto-detects distro, kernel, Clang/GCC, and USB adapter, then asks for install method (AUR vs GitHub DKMS), USB 3.0/2.0 mode, `rtw89_8852cu` blacklisting, and live module reload. |
 
 ### 📜 Prior Community Kernel Patches Included
 - **Linux 6.18** (`df11acd`) — `cfg80211` / timer / kernel API updates
@@ -70,6 +72,25 @@
 | **Compilers** | **GCC** 13, 14, 15, 16 • **Clang / LLVM** (auto-detected by `dkms-make.sh`) |
 | **CPU Architectures** | `x86_64` / `amd64`, `i386`/`i686`, `aarch64` (`arm64`), `armv6l`/`armv7l`, `riscv` |
 | **Verified Distros** | **CachyOS** (`7.3.6-1-cachyos`, Clang/LLVM), **Arch Linux**, **Debian**, **Ubuntu**, **Fedora**, **Manjaro**, **openSUSE Tumbleweed**, **Raspberry Pi OS**, **Zorin OS** |
+
+---
+
+## 🪄 1-Line Interactive Installer (Recommended)
+
+Run a single command — `setup.sh` auto-detects your **distro**, **kernel**, **GCC vs Clang/LLVM**, and **USB adapter**, then walks you through clean interactive prompts:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/9M2PJU/rtl8852cu-9M2PJU-dkms/main/setup.sh | bash
+```
+
+**What the interactive wizard asks & handles for you:**
+1. **Install / Upgrade / Configure / Uninstall** — offers AUR (`yay`/`paru`) automatically on Arch/CachyOS, or GitHub DKMS (`install-driver.sh`) on any distro (Debian, Ubuntu, Fedora, openSUSE, etc.)
+2. **USB Speed Mode** — choose between **USB 3.0 SuperSpeed (`5000M`)** for max throughput or **USB 2.0 (`480M`)** for hub compatibility (or keep existing `8852cu.conf`)
+3. **In-Kernel Driver Blacklist** — optionally writes `/etc/modprobe.d/blacklist-rtw89-8852cu.conf` so `8852cu` binds without conflict
+4. **Build Dependencies & Live Reload** — optionally installs matching kernel headers (`linux-cachyos-headers`, `linux-headers`, etc.) and reloads `8852cu` immediately with no reboot required
+
+> [!TIP]
+> Prefer to inspect the script before running? View [`setup.sh`](setup.sh) directly in this repo, or run `bash <(curl -fsSL https://raw.githubusercontent.com/9M2PJU/rtl8852cu-9M2PJU-dkms/main/setup.sh)`.
 
 ---
 
