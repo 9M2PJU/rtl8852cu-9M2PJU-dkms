@@ -1,773 +1,258 @@
-## rtl8852cu-9M2PJU-dkms (`8852cu.ko`) :rocket:
+<div align="center">
 
-## Linux DKMS Driver for USB WiFi Adapters Based on the RTL8832CU and RTL8852CU Chipsets
+# 📡 rtl8852cu-9M2PJU-dkms (`8852cu.ko`)
 
-- Maintained fork by **9M2PJU** (`https://github.com/9M2PJU/rtl8852cu-9M2PJU-dkms`) based on Realtek v1.19.2.1 (20240510), `morrownr/rtl8852cu-20240510`, and community kernel patches.
-- Updated for **Linux 6.18 – 7.3+ kernels** and **Clang/LLVM-built kernels** (such as CachyOS) as well as standard GCC kernels.
+**Linux DKMS Driver for Realtek RTL8832CU & RTL8852CU Wi-Fi 6 / 6E USB Adapters**  
+*Maintained by **9M2PJU** — updated for modern **Linux 6.18 – 7.3+**, **Clang/LLVM (CachyOS)**, and **GCC** kernels.*
 
-### What's Updated in This Fork
+[![Linux Kernel](https://img.shields.io/badge/Linux_Kernel-5.15_%E2%80%93_7.3%2B-FCC624?style=for-the-badge&logo=linux&logoColor=black)](https://kernel.org)
+[![Compiler](https://img.shields.io/badge/Compiler-GCC_%26_Clang%2FLLVM-262D3A?style=for-the-badge&logo=llvm&logoColor=white)](#compilers--distributions)
+[![AUR](https://img.shields.io/badge/AUR-rtl8852cu--dkms--morrownr--git-1793D1?style=for-the-badge&logo=archlinux&logoColor=white)](https://aur.archlinux.org/packages/rtl8852cu-dkms-morrownr-git)
+[![License: GPL v2](https://img.shields.io/badge/License-GPL--2.0-blue?style=for-the-badge)](LICENSE)
+[![Driver Version](https://img.shields.io/badge/Realtek_Base-v1.19.2.1_(20240510)-00ADD8?style=for-the-badge)](#about)
 
-- **Linux 7.3+ `cfg80211_ops` compatibility**: updated `add_key`, `get_key`, `del_key`, `set_default_mgmt_key`, `get_station`, `add_station`, `del_station`, `change_station`, `dump_station`, `cfg80211_new_sta`, `cfg80211_del_sta`, `remain_on_channel`, `mgmt_tx`, and `set_tx_power` (`radio_idx`) signatures — fixes kernel page-fault oops (`BUG: unable to handle page fault`) on connect/key-add.
-- **Removed `strncpy()` compatibility**: replaced legacy `strncpy()` calls with `strscpy()` / `memcpy()` and an inline `_os_strncpy()` helper for newer kernels and Clang/LLVM builds.
-- **Clang/LLVM kernel auto-detection in `dkms-make.sh`**: automatically passes `LLVM=1` when `CONFIG_CC_IS_CLANG=y` is detected in kernel headers (works seamlessly on CachyOS and standard GCC distros).
-- **PPPoE header compatibility & clean `CONFIG_BR_EXT=n` build**: safe byte-offset access in `rtw_br_ext.c` and stub guard in `rtw_xmit.c`.
-- **Clean DKMS config**: removed deprecated `CLEAN` directive from `dkms.conf`.
+[✨ What's Changed](#-whats-changed-in-this-fork) •
+[⚡ Quick Install](#-quick-installation) •
+[🚀 USB 3.0 High-Speed Mode](#-usb-30-superspeed-tuning) •
+[🔌 Supported Devices](#-supported-usb-devices) •
+[🛠️ Troubleshooting](#️-troubleshooting--tips)
 
-Note: Please read the file "supported-device-IDs" for information about
-how to confirm that this is the correct driver for your adapter.
+</div>
 
-Note: Posting this driver is not a recommendation for Linux users to buy
-USB WiFi adapters based on the Realtek chipsets supported by this
-driver. Realtek out-of-kernel wifi drivers, such as this one, are not
-Linux Wireless Standards compliant and appear to be designed to be used
-by skilled programmers producing products such as embedded systems.
-Users of desktop and server distros such as Ubuntu, Debian, Manjaro,
-Arch, Fedora, Raspberry Pi OS will likely find that adapters that use
-in-kernel drivers are more stable and much more trouble-free. The
-following links will provide more information:
+---
 
-[USB WiFi adapter information for Linux](https://github.com/morrownr/USB-WiFi/blob/main/home/USB_WiFi_Adapter_Information_for_Linux.md)
+## 📖 About
 
-[USB WiFi adapters that are supported with Linux in-kernel drivers](https://github.com/morrownr/USB-WiFi/blob/main/home/USB_WiFi_Adapters_that_are_supported_with_Linux_in-kernel_drivers.md)
-
-### Supported Features
-
-- IEEE 802.11 b/g/n/ac/ax WiFi compliant
-- 802.1x, WEP, WPA TKIP and WPA2 AES/Mixed mode for PSK and TLS (Radius)
-- WPA3-SAE R2
-- WPS - PIN and PBC Methods
-- IEEE 802.11b/g/n/ac/ax Client mode
-  * Supports wireless security for WEP, WPA TKIP and WPA2 AES PSK
-  * Supports site survey scan and manual connect
-  * Supports WPA/WPA2 TLS client
-- Miracast
-- WiFi-Direct
-- Wake on WLAN
-- Supported interface modes
-  * IBSS (not tested)
-  * Managed
-  * AP (see file hpstapd-rtl8852cu.conf)
-  * P2P-client
-  * P2P-GO
-- VHT control (allows 160 MHz channel width in AP mode)
-- HE control (allows 160 MHz channel width in AP mode)
-- USB mode control
+`rtl8852cu-9M2PJU-dkms` is an actively maintained DKMS fork of the Realtek **v1.19.2.1 (20240510)** `8852cu.ko` out-of-tree USB Wi-Fi driver (originating from `morrownr/rtl8852cu-20240510` and `parheliamm/rtl8852cu-20240510`), patched to compile cleanly and run stably on bleeding-edge Linux **7.3+** kernels and **Clang/LLVM-built kernels** such as **CachyOS**.
 
 > [!NOTE]
-> Monitor mode is not supported.
-> Linux users that want good support for monitor mode in a dual band or
-> tri-band adapter should seek out USB WiFi adapters based on the
-> mt7610u, mt7612u or mt7921au chipsets.
+> **In-kernel driver note:** Linux includes an in-kernel `rtw89_8852cu` driver. If `rtw89_8852cu` works well on your kernel, prefer it. Use this DKMS driver when you need Realtek's vendor PHY/Wi-Fi 6/AP/USB-mode features or hit regressions with `rtw89_8852cu` — make sure to blacklist `rtw89_8852cu` when using `8852cu` so the two drivers do not conflict.
 
-### A FAQ is available in this repo with the name `FAQ.md`
+---
 
-- Please read the FAQ and this document before posting issues.
+## ✨ What's Changed in This Fork
 
-### Additional documentation is in the file `8852cu.conf`
+### 🆕 `2026-11-26` — Linux 7.3+ & Clang/LLVM Release (`8750f22`)
 
-### Compatible CPU Architectures
+| Area | File(s) | Change & Why It Matters |
+| :--- | :--- | :--- |
+| **Linux 7.3 `cfg80211_ops` Crash Fix** | `os_dep/linux/ioctl_cfg80211.c` | Updated `add_key`, `get_key`, `del_key`, `set_default_mgmt_key`, `get_station`, `add_station`, `del_station`, `change_station`, `dump_station`, `cfg80211_new_sta`, and `cfg80211_del_sta` from `struct net_device *` to `struct wireless_dev *` (`LINUX_VERSION_CODE >= 7.3.0`). Updated `remain_on_channel` and `mgmt_tx` from `u64 *cookie` to `u64 cookie`, and added `int radio_idx` to `set_tx_power` (`>= 6.17.0`). **Fixes the kernel page-fault oops (`BUG: unable to handle page fault` in `cfg80211_rtw_add_key` → `rtw_cfg80211_sync_iftype`) when connecting via `wpa_supplicant`.** |
+| **Clang/LLVM Auto-Detection** | `dkms-make.sh` | Automatically inspects `$ksrc/.config` and `$ksrc/include/config/auto.conf` for `CONFIG_CC_IS_CLANG=y` and passes `LLVM=1` automatically. Works seamlessly out-of-the-box on both **CachyOS (Clang/LLVM)** and standard **GCC** distros (Arch, Ubuntu, Debian, Fedora). |
+| **Removed `strncpy()` Kernel API Fix** | `core/rtw_debug.c`, `os_dep/linux/ioctl_cfg80211.c`, `os_dep/linux/ioctl_linux.c`, `os_dep/linux/os_intfs.c`, `os_dep/linux/rtw_cfgvendor.c`, `os_dep/linux/usb_intf.c`, `phl/pltfm_ops_linux.h` | Replaced deprecated/removed kernel `strncpy()` calls with `strscpy()`, `memcpy()`, and an inline `_os_strncpy()` helper so Clang/LLVM and modern kernels compile without `Unknown symbol strncpy` or implicit-declaration errors. |
+| **PPPoE Header & `CONFIG_BR_EXT` Fix** | `core/rtw_br_ext.c`, `core/rtw_xmit.c`, `Makefile` | Uses wire-layout byte offsets (`RTW_PPPOE_TAG` / `RTW_PPPOE_TAG_DATA`) for hidden kernel `pppoe_hdr` fields, disables `CONFIG_BR_EXT` cleanly, and adds a `#else` stub + `#ifdef CONFIG_BR_EXT` guard for `core_br_client_tx` (fixes `Unknown symbol core_br_client_tx`). |
+| **Clean DKMS Config** | `dkms.conf` | Removed the deprecated `CLEAN` directive that caused DKMS warnings on modern `dkms` versions. |
 
-- x86, i386, i686
-- x86-64, amd64
-- armv6l, armv7l (arm)
-- aarch64 (arm64)
-- riscv
+### 📜 Prior Community Kernel Patches Included
+- **Linux 6.18** (`df11acd`) — `cfg80211` / timer / kernel API updates
+- **Linux 6.17** (`7a5f2c6`, `#38`) — `cfg80211` `radio_idx` support
+- **Linux 6.16** (`c01bd40`) — kernel 6.16 compatibility fixes
+- **Linux 5.15 – 6.15** — Realtek v1.19.2.1 (20240510) + `morrownr` & community patches
 
-Note: Additional CPU architectures may work but have not been tested.
+---
 
-### Compatible Kernels
+## 🎯 Features
 
-- Kernels: 5.15 - 6.6  (Realtek)
-- Kernels: 6.7  - 7.3+ (community & 9M2PJU fork support)
+- **Wi-Fi Standards:** IEEE 802.11 a/b/g/n/ac/ax (Wi-Fi 6 / 6E where hardware supports it), up to **160 MHz** channel width (VHT / HE)
+- **Security:** WPA3-SAE R2, WPA2-AES/PSK/Enterprise (802.1X TLS/RADIUS), WPA, WEP, WPS (PIN/PBC)
+- **Operating Modes:** Managed (Station), AP (`hostapd-rtl8852cu.conf`), P2P-Client / P2P-GO (Wi-Fi Direct / Miracast), IBSS, Wake-on-WLAN
+- **USB Mode Control:** Switchable between USB 2.0 (`480M`) and USB 3.0 SuperSpeed (`5000M`) via `rtw_switch_usb_mode`
 
-Note: Kernels earlier than 5.10 may work but have not been tested.
+> [!WARNING]
+> **Monitor mode is not supported** by Realtek's `8852cu` driver. If you need monitor mode / packet injection on Linux, use an adapter based on a MediaTek chipset (`mt7610u`, `mt7612u`, `mt7921au`).
 
-### Tested Compilers
+---
 
-- gcc 13, 14, 15, 16
-- clang / LLVM (auto-detected by `dkms-make.sh` for Clang-built kernels like CachyOS)
+## 🖥️ Compilers, Kernels & Distributions
 
-### Tested Linux Distributions
+| Category | Supported / Verified |
+| :--- | :--- |
+| **Linux Kernels** | `5.15 – 6.6` (Realtek) • `6.7 – 6.18` (community) • **`6.19 – 7.3+` (9M2PJU fork)** |
+| **Compilers** | **GCC** 13, 14, 15, 16 • **Clang / LLVM** (auto-detected by `dkms-make.sh`) |
+| **CPU Architectures** | `x86_64` / `amd64`, `i386`/`i686`, `aarch64` (`arm64`), `armv6l`/`armv7l`, `riscv` |
+| **Verified Distros** | **CachyOS** (`7.3.6-1-cachyos`, Clang/LLVM), **Arch Linux**, **Debian**, **Ubuntu**, **Fedora**, **Manjaro**, **openSUSE Tumbleweed**, **Raspberry Pi OS**, **Zorin OS** |
 
-Note: The information in this section depends largely on user reports
-which can be provided via PR or message in Issues.
+---
 
-- [Arch Linux](https://www.archlinux.org) (kernels 5.4, 5.11, 6.16)
+## ⚡ Quick Installation
 
-- [CachyOS](https://cachyos.org) (kernel 7.3.6-1-cachyos, Clang/LLVM)
+### Option 1: Arch Linux / CachyOS via AUR (Recommended)
 
-- [Debian](https://www.debian.org/) (kernels 5.10, 5.15, 6.1 and 6.12)
-
-- [Fedora](https://getfedora.org) Fedora 38 (6.2.13-300)
-
-- [Manjaro](https://manjaro.org) (kernel 5.15)
-
-- [openSUSE](https://www.opensuse.org/) Tumbleweed (rolling) (kernel 5.15)
-
-- [Raspberry Pi OS](https://www.raspberrypi.org) (kernel 6.12)
-
-- [Raspberry Pi Desktop](https://www.raspberrypi.org) (2022-07-01) (x86 32 bit) (kernel 5.10)
-
-- [Ubuntu](https://www.ubuntu.com) kernel 6.8, kernel 6.11, 6.14 and 6.17
-  
-- [Zorin](https://zorin.com/) 17.3 (kernel 6.8)
-
-Note: Red Hat Enterprise Linux (RHEL) and distros based on RHEL are
-supported by Red Hat devs due to the way kernel patches are handled in
-Red Hat. I support knowledgable RHEL developers if they want to merge
-the required support and keep it current. I reserve the right to delete
-this support without notice if it causes any problems.
-
-Current RHEL maintainer: none
-
-Note: Android is supported in the driver according to Realtek. I will
-support knowledgable Android developers if they want to merge and keep
-current the required support (most likely just instructions about how to
-compile and maybe a modification or two to the Makefile).
-
-Current Android maintainer: none
-
-Note: OpenWRT is not supported. OpenWRT provides drivers for USB WiFi
-adapters. OpenWRT provided drivers include support for the MT7925
-(BE6500), MT7921au (AXE3000), MT7612u (AC1200), MT7610u (AC600)
-chipsets. It is a challenge to use Realtek based adapters that use
-out-of-kernel drivers with OpenWRT so it is strongly advised to use the
-already supported Mediatek chipsets.
-
-### Compatible Devices
-
-* Edup AX5400 EP-AX1671 (single-state, no windows driver onboard)
-
-Warning: The below adapters are also compatible but are multi-state
-adapters, meaning that they have an internal Windows driver, and may be
-problematic.
-
-* Edup AX5400 EP-AX1671S
-* Brostrend AX8
-* TP-Link Archer TX50UH V1
-* TP-Link Archer TXE70UH(EU) V1
-* MSI AXE5400
-* Wavlink WL-WN695X2-A
-* Additional adapters that are based on the supported chipsets.
-
-Note: If you are looking for information about what adapter to buy,
-click [here](https://github.com/morrownr/USB-WiFi) and look for Main
-Menu item 2 which will show information about and links to recommended
-adapters.
-
-Note: If you decide to buy an adapter that is supported by this driver,
-I recommend you search for an adapter that is `single-state and
-single-function`. Multi-function adapters, wifi and bluetooth, can be
-problematic. The rtl8852bu chipset is multi-fuction. The rtl8832bu
-chipset is single-function. For advice about single-state and
-multi-state adapters. click [here](https://github.com/morrownr/USB-WiFi)
-and look for Main Menu item 1.
-
-### Installation Information
-
-Warning: It is recommended that you follow the installation instructions
-in the Installation Steps section. Avoid installation by downloading the
-zip file if at all possible. Support can only be provided, on a best
-effort basis, if the Installation Steps in the next section are followed.
-
-Warning: Installing multiple out-of-kernel drivers for the same hardware
-usually does not end well. The install-driver.sh script has the
-capability to detect and uninstall most conflicting drivers but not all.
-If this driver does not work well after installation and you have
-previously installed a driver that you did not uninstall, it is suggested
-that you run the following command in an effort to determine if you need
-to take action to manually uninstall conflicting drivers:
-
-```
-sudo dkms status
+```bash
+yay -S rtl8852cu-dkms-morrownr-git
 ```
 
-Warning: If you decide to do a distro upgrade, which will likely install
-a new major version of the kernel such as 6.1 to 6.6, you need to
-update this driver with the newest available code and then run the
-`uninstall-driver.sh` script before performing the disto upgrade. Use
-the following commands in the driver directory:
+Blacklist the in-kernel `rtw89_8852cu` driver so `8852cu` binds cleanly:
 
-```
-git pull
+```bash
+echo "blacklist rtw89_8852cu" | sudo tee /etc/modprobe.d/blacklist-rtw89-8852cu.conf
 ```
 
-Note: Do not reboot before running the below command so that the driver
-stays active until after your distro upgrade is complete.
+Reboot or replug your USB Wi-Fi adapter.
 
-```
-sudo sh uninstall-driver.sh
-```
+---
 
-Note: The following command will reinstall the updated driver after you
-are finished with the distro upgrade.
+### Option 2: DKMS Install Script (All Distros)
 
-```
-sudo sh install-driver.sh
-```
+1. **Install build dependencies:**
 
-Internet access is required for initial installation. There are
-numerous ways to enable temporary internet access depending on your
-hardware and situation. [One method is to use tethering from a phone.](https://www.makeuseof.com/tag/how-to-tether-your-smartphone-in-linux).
-Another method is to keep a [WiFi adapter that uses an in-kernel driver](https://github.com/morrownr/USB-WiFi/blob/main/home/USB_WiFi_Adapters_that_are_supported_with_Linux_in-kernel_drivers.md) in your toolkit.
+<details>
+<summary><b>Arch / CachyOS / Manjaro</b></summary>
 
-You will need to use the terminal interface. The quick way to open a
-terminal: Ctrl+Alt+T (hold down on the Ctrl and Alt keys then press the
-T key).
-
-An alternative terminal is to use SSH (Secure Shell) from the same or from
-another computer, in which case you will be in a suitable terminal after logging
-in, but this step requires that an SSH daemon/server has already been
-configured. (There are lots of SSH guides available, e.g., for the [Raspberry Pi](https://www.raspberrypi.com/documentation/computers/remote-access.html#setting-up-an-ssh-server) and for [Ubuntu](https://linuxconfig.org/ubuntu-20-04-ssh-server). Do not forget [to secure the SSH server](https://www.howtogeek.com/443156/the-best-ways-to-secure-your-ssh-server/).)
-
-You will need to have sufficient access rights to use `sudo` so that
-commands can be executed as the `root` user. (If the command `sudo echo
-Yes` returns "Yes", with or without having to enter your password, you
-do have sufficient access rights.)
-
-DKMS is used for the installation, if available. DKMS is a system utility
-which will automatically recompile and reinstall this driver when a new
-kernel is installed. DKMS is provided by and maintained by Dell.
-
-It is recommended that you do not delete the driver directory after
-installation as the directory contains information and scripts that you
-may need in the future.
-
-Secure Boot: some information is below but more detailed information is
-in the FAQ.
-
-### Installation Steps
-
-Note: The installation steps are for the novice user. Experienced
-users are welcome to alter the installation to meet their needs. Support
-will be provided, on a best effort basis, based on the steps below.
-Another way to word this paragraph is that if you do not follow the
-below steps for installation, you are your own tech support.
-
-#### Step 1: Open a terminal (e.g. Ctrl+Alt+T)
-
-#### Step 2: Update and upgrade system packages (select the option for the distro you are using)
-
-Note: If your Linux distro does not fall into one of options listed
-below, you will need to research how to `update` and `upgrade` your
-system packages.
-
-- Option for Debian based distributions such as Ubuntu, Kali, Armbian
-and Raspberry Pi OS
-
-```
-sudo apt update && sudo apt upgrade
-```
-
-- Option for Arch based distributions such as Manjaro
-
-```
+```bash
 sudo pacman -Syu
+sudo pacman -S --needed linux-headers dkms git bc iw
+# CachyOS users: install linux-cachyos-headers instead of linux-headers
 ```
+</details>
 
-- Option for Fedora based distributions
+<details>
+<summary><b>Debian / Ubuntu / Kali / Raspberry Pi OS</b></summary>
 
-```
-sudo dnf upgrade
-```
-
-- Option for openSUSE based distributions
-
-```
-sudo zypper update
-```
-
-- Option for Void Linux
-
-```
-sudo xbps-install -Syu
-```
-
-Note: It is recommended that you reboot your system at this point. The
-rest of the installation will appreciate having a fully up-to-date
-system to work with. The installation can then be continued with Step 3.
-
-```
-sudo reboot
-```
-
-#### Step 3: Install the required packages (select the option for the distro you are using)
-
-Note: If your Linux distro does not fall into one of options listed
-below, you will need to research how to properly setup up the development
-environment for your system. General guidance follows.
-
-Development Environment Requirements: (package names may vary by distro)
-
-- Mandatory packages: `gcc` `make` `bc` `kernel-headers` `build-essential` `git`
-- Highly recommended packages: `dkms` `rfkill` `iw` `ip`
-- Mandatory packages if Secure Boot is active: `openssl` `sign-file` `mokutil`
-
-Note: The below options should take care of the mandatory and highly recommended
-requirements. If Secure Boot is active on your system, please also install the
-mandatory packages for Secure Boot as shown above.
-
-- Option for Armbian (arm64)
-
-```
-sudo apt install -y build-essential
-```
-
-- Option for Raspberry Pi OS (arm/arm64)
-
-```
-sudo apt install -y raspberrypi-kernel-headers build-essential bc dkms git
-```
-
-- Option for Debian, Kali, and Raspberry Pi Desktop (x86)
-
-```
+```bash
+sudo apt update && sudo apt upgrade -y
 sudo apt install -y linux-headers-$(uname -r) build-essential bc dkms git libelf-dev rfkill iw
 ```
+</details>
 
-- Option for Ubuntu (all official flavors) and the numerous Ubuntu based distros
+<details>
+<summary><b>Fedora</b></summary>
 
+```bash
+sudo dnf upgrade -y
+sudo dnf install -y git dkms kernel-devel bc openssl
 ```
-sudo apt install -y build-essential dkms git iw
-```
+</details>
 
-- Option for Fedora
+<details>
+<summary><b>openSUSE</b></summary>
 
-Note: Fedora users should also install `openssl` if secure boot is
-active.
-
-```
-sudo dnf -y install git dkms kernel-devel
-```
-
-- Option for openSUSE
-
-```
+```bash
+sudo zypper update
 sudo zypper install -t pattern devel_kernel dkms
 ```
+</details>
 
-- Option for Alpine
+2. **Clone and install via DKMS:**
 
-```
-sudo apk add linux-lts-dev make gcc
-```
-
-- Option for Void Linux
-
-```
-sudo xbps-install linux-headers dkms git make
-```
-
-- Options for Arch and Manjaro (if using Manjaro for RasPi4B, see note)
-
-If using pacman
-
-```
-sudo pacman -S --noconfirm linux-headers dkms git bc iw
-```
-
-Note: The following is needed if using Manjaro for RasPi4B.
-
-```
-sudo pacman -S --noconfirm linux-rpi4-headers dkms git bc
-```
-
-Note: If you are asked to choose a provider, make sure to choose the one
-that corresponds to your version of the linux kernel (for example,
-"linux510-headers" for Linux kernel version 5.10). If you install the
-incorrect version, you'll have to uninstall it and install the correct
-version.
-
-If using other methods, please follow the instructions provided by those
-methods.
-
-#### Step 4: Create a directory to hold the downloaded driver
-
-```
-mkdir -p ~/src
-```
-
-#### Step 5: Move to the newly created directory
-
-```
-cd ~/src
-```
-
-#### Step 6: Download the driver
-
-```
+```bash
+mkdir -p ~/src && cd ~/src
 git clone https://github.com/9M2PJU/rtl8852cu-9M2PJU-dkms.git
-```
-
-#### Step 7: Move to the newly created driver directory
-
-```
 cd ~/src/rtl8852cu-9M2PJU-dkms
-```
-
-#### Step 8: Run the installation script (`install-driver.sh`)
-
-Important: The compilation may fail if the major version of gcc that is
-in use is not the same as the major version of the gcc that was used to
-compile the kernel that is in use:
-
-Example of bad situation:
-
-```
-gcc 12.1 (used to compile the kernel)
-gcc 10.3 (version of gcc in use)
-```
-
-Example of good situation:
-
-```
-gcc 12.2 (used to compile the kernel)
-gcc 12.1 (version of gcc in use)
-```
-
-To determine the values:
-
-```
-cat /proc/version
-```
-
-```
-gcc --version
-```
-
-If you find your system in a bad situation, it is recommended that you
-install a version of gcc that matches the major version of gcc that was
-used to compile your kernel. Here is an example of how to install gcc-12
-for Ubuntu:
-
-```
-sudo apt install gcc-12
-```
-
-Note: If your system is a low memory system, it is recommended that you
-terminate running apps so as to provide the maximum amount of RAM to the
-compilation process.
-
-Note: For automated builds (non-interactive), use `NoPrompt` as an
-option.
-
-```
 sudo ./install-driver.sh
 ```
 
-or
+> [!TIP]
+> For non-interactive / automated installs, run `sudo ./install-driver.sh NoPrompt`.  
+> Check installation status anytime with `dkms status`.
 
-```
-sudo sh install-driver.sh
-```
+<details>
+<summary><b>Option 3: Manual Build (Non-DKMS)</b></summary>
 
-Important: If you are installing to a system that has Secure Boot
-active, you will see a `Configuring Secure Boot` screen come up. The
-following instructions were tested on Ubuntu 24.04.1. Some distros do
-not support Secure Boot and some distros require different instructions.
-
-Read the information on the `Configuring Secure Boot` screen.
-
-Tab to select OK. Press Enter
-
-Enter a password and press Enter (twice). I use the same password as my
-system uses.
-
-During the next boot, you will see the MOK managerment screen.
-
-Select the following:
-
-Enroll MOK
-
-Continue
-
-Enroll the key? Yes
-
-Enter password
-
-Note: Fedora users that have secure boot turned on may need to run the
-following to enroll the key:
-
-```
-sudo mokutil --import /var/lib/dkms/mok.pub
-```
-
-Note: If you elect to skip the reboot at the end of the installation
-script, the driver may not load immediately and the driver options will
-not be applied. Rebooting is strongly recommended.
-
-### Manual Installation Instructions
-
-Note: The installation script, install-driver.sh, automates the
-installation process, however, if you want to or need to do a basic
-command line installation, use the following:
-
-```
+```bash
 make clean
-```
-
-```
+# On GCC kernels:
 make -j$(nproc)
-```
+# On Clang/LLVM kernels (e.g. CachyOS):
+make LLVM=1 -j$(nproc)
 
-If secure boot is off:
-
-```
-sudo make install
-```
-
-```
+sudo make install        # or `sudo make sign-install` for Secure Boot
 sudo reboot
 ```
 
-If secure boot is on:
+To remove a manual install: `sudo make uninstall && sudo reboot`.
+</details>
 
-Note: Please read to the end of this section before coming back here to
-enter commands.
+---
 
-```
-sudo make sign-install
-```
+## 🚀 USB 3.0 SuperSpeed Tuning
 
-Important: If you are installing to a system that has Secure Boot
-active, you will see a `Configuring Secure Boot` screen come up.
+By default, `8852cu.conf` sets `rtw_switch_usb_mode=0` (USB 2.0 `480M`) for maximum compatibility on noisy hubs. If your adapter is plugged into a **USB 3.0 port**, switching to USB 3.0 SuperSpeed (`5000M`) noticeably improves multi-stream throughput and reduces idle latency:
 
-Read the information on the screen.
-
-Tab to select OK. Press Enter
-
-Enter a password and press Enter (twice). I use the same password as my
-system uses.
-
-During the next boot, you will see the MOK managerment screen.
-
-Select the following:
-
-Enroll MOK
-
-Continue
-
-Enroll the key? Yes
-
-Enter password
-
-Warning: If you enter the wrong password, your computer may not be
-bootable. In this case, use the BOOT menu from your BIOS to boot then as
-follows:
-
-```
-sudo mokutil --reset
+```bash
+echo "options 8852cu rtw_switch_usb_mode=1" | sudo tee /etc/modprobe.d/8852cu.conf
+sudo modprobe -r 8852cu && sudo modprobe 8852cu
 ```
 
-Restart your computer. Use the BOOT menu from BIOS to boot. In the MOK
-managerment screen, select `reset MOK list`, then reboot and retry from
-the above step `sudo make sign-install`.
+Verify USB 3.0 (`5000M`) is active:
 
-Note: If you use the Manual Installation Instructions, you will need to
-repeat the installation process each time a new kernel is installed in
-your distro.
-
------
-
-### Manual Removal Instructions
-
-To uninstall the driver if installed by the Manual Installation
-Instructions:
-
-```
-sudo make uninstall
+```bash
+lsusb -t | grep -i rtl8852cu
+# Expected: |__ Port 006: Dev 003, If 0, Class=Vendor Specific Class, Driver=rtl8852cu, 5000M
 ```
 
-```
-sudo reboot
-```
+### 📊 Real-World Benchmark (ThinkPad T460 • CachyOS `7.3.6-1-cachyos` • `35bc:0102` • 5 GHz 80 MHz HE-NSS2)
 
-Note: If you use the manual installation instructions, or if dkms is not
-installed, you will need to repeat the process each time a new kernel is
-installed in your distro.
+| Metric | USB 2.0 (`rtw_switch_usb_mode=0`, `480M`) | USB 3.0 (`rtw_switch_usb_mode=1`, `5000M`) | Gain |
+| :--- | :---: | :---: | :---: |
+| **Cloudflare 100 MB (4-stream)** | 276.4 Mbps | **323.3 Mbps** | **+17.0%** |
+| **Ookla Speedtest (KL)** | 202.9 Mbps | **335.1 Mbps** *(burst 420 Mbps)* | Full ISP saturation |
+| **Idle Latency** | 4.29 ms | **3.09 ms** | **-1.20 ms** |
+| **Kernel Errors / Packet Loss** | 0 / 0% | **0 / 0%** | Rock solid |
 
------
+> [!TIP]
+> See [`8852cu.conf`](8852cu.conf) or run `sudo ./edit-options.sh` for all supported module parameters, and [`hostapd-rtl8852cu.conf`](hostapd-rtl8852cu.conf) for AP mode configuration.
 
-### Driver Options (`edit-options.sh`)
+---
 
-Note: In Linux, driver options are called module parameters.
+## 🔌 Supported USB Devices
 
-A file called `8852cu.conf` will be installed in `/etc/modprobe.d` by
-default if you use the installation script, `install-driver.sh`. If you
-are following the Manual Installation Instructions, you can use the
-`edit-options.sh` script to install and/or edit the file.
+Run `lsusb` to check your adapter's `VendorID:ProductID` (full list in [`supported-device-IDs`](supported-device-IDs) and `os_dep/linux/usb_intf.c`):
 
-Note: The installation script, `install-driver.sh`. will prompt you to
-edit the options.
+| USB ID | Device / Chipset | Notes |
+| :---: | :--- | :--- |
+| `0bda:c832` | Realtek RTL8832CU / RTL8852CU | Default Realtek ID |
+| `0bda:c85a` | Realtek RTL8832CU / RTL8852CU | Default Realtek ID |
+| `0bda:c85d` | Realtek RTL8832CU / RTL8852CU | Default Realtek ID |
+| `0db0:991d` | MSI AXE5400 | Multi-state (`usb_modeswitch`) |
+| `35b2:0502` | TP-Link RTL8852CU adapter | |
+| `35bc:0101` | TP-Link Archer TX50UH V1 | Multi-state |
+| `35bc:0102` | TP-Link Archer TXE70UH(EU) V1 / Realtek AX | Verified on Linux 7.3.6 (CachyOS) |
 
-`8852cu.conf` will be read and applied to the driver on each system boot.
+Also reported compatible: **EDUP AX5400 EP-AX1671 / EP-AX1671S**, **BrosTrend AX8**, **Wavlink WL-WN695X2-A**.
 
-To edit the driver options file, run the `edit-options.sh` script
+---
 
-```
-sudo ./edit-options.sh
-```
+## 🔄 Upgrading & Uninstalling
 
-Note: Documentation for Driver Options is included in the file
- `8852cu.conf`.
+<details>
+<summary><b>Upgrading from Git</b></summary>
 
------
-
-### Upgrading the Driver
-
-Note: Linux development is continuous therefore work on this driver is
-continuous.
-
-Note: Upgrading the driver is advised in the following situations:
-
-- if a new or updated version of the driver needs to be installed
-- if a distro version upgrade is going to be installed (i.e. going from
-kernel 5.10 to kernel 5.15)
-
-#### Step 1: Move to the driver directory
-
-```
+```bash
 cd ~/src/rtl8852cu-9M2PJU-dkms
-```
-
-#### Step 2: Pull updated code from this repo
-
-```
 git pull
-```
-
-#### Step 3: Install the driver
-
-```
 sudo ./install-driver.sh
 ```
+</details>
 
------
-### Uninstalling the Driver (`uninstall-driver.sh`)
+<details>
+<summary><b>Uninstalling</b></summary>
 
-Note: Uninstalling the driver is advised in the following situations:
-
-- if driver installation fails
-- if the driver is no longer needed
-
-Note: The following uninstalls everything that has been installed, with the
-exception of the packages installed in Step 3 and the driver directory.
-The driver directory can be deleted after running this script.
-
-#### Step 1: Open a terminal (e.g. Ctrl+Alt+T)
-
-#### Step 2: Move to the driver directory
-
-```
+```bash
 cd ~/src/rtl8852cu-9M2PJU-dkms
-```
-
-#### Step 3: Run the removal script
-
-Note: For automated builds (non-interactive), use `NoPrompt` as an
-option.
-
-```
 sudo ./uninstall-driver.sh
 ```
+</details>
 
------
+---
 
-### Recommended WiFi Router/ Access Point Settings
+## 🛠️ Troubleshooting & Tips
 
-Note: These are general recommendations, some of which may not apply to
-your specific situation.
+- **Conflict with in-kernel `rtw89_8852cu`:** Check `lsmod | grep -E '8852|rtw89'`. If `rtw89_8852cu` is grabbing the adapter, add `blacklist rtw89_8852cu` to `/etc/modprobe.d/blacklist-rtw89-8852cu.conf` and reboot.
+- **Multi-state adapters showing as USB CD-ROM (`0bda:1a2b`):** Make sure `usb_modeswitch` is installed so the dongle automatically switches to Wi-Fi mode.
+- **Secure Boot:** DKMS signs modules automatically if MOK keys are enrolled (`/var/lib/dkms/mok.pub`). On Fedora, enroll with `sudo mokutil --import /var/lib/dkms/mok.pub`. See [`FAQ.md`](FAQ.md) for details.
+- **Check active parameters:**
+  ```bash
+  grep '[[:alnum:]]' /sys/module/8852cu/parameters/*
+  ```
+- **USB stability:** Plug directly into a motherboard USB 3.0 port (avoid unshielded extension cables or underpowered hubs).
 
-- Security: Set WPA2-AES or WPA2/WPA3 mixed or WPA3. Do not set WPA2
-mixed mode or WPA or TKIP. Some clients may not work well with WPA2/WPA3
-mixed.
+---
 
-- Channel width for 2.4 GHz: Set 20 MHz fixed width. Do not use 40 MHz
-or 20/40 automatic.
+## 🙏 Credits & License
 
-- Channels for 2.4 GHz: Set channel 1 or 6 or 11 depending on the
-congestion at your location. Do not set automatic channel selection. As
-time passes, if you notice poor performance, recheck congestion and set
-channel appropriately. The environment around you can and does change
-over time. With the advent of WiFi 6, Wifi 6 (AX) is now available for
-the 2.4 GHz band. No problems have been noted when setting an AP/wifi
-router to mixed WiFi 4 (n) and WiFi 6 (ax).
+- **Realtek Semiconductor Corp.** — Upstream `rtl8852cu` driver (`v1.19.2.1`)
+- **[morrownr](https://github.com/morrownr/USB-WiFi)** & **[parheliamm](https://github.com/parheliamm/rtl8852cu-20240510)** — Original Linux community packaging, DKMS scripts, and kernel 6.x patches
+- **9M2PJU** ([hamradio.my](https://hamradio.my)) — Linux 7.3+ `cfg80211` fixes, Clang/LLVM auto-detection, AUR maintenance
 
-- Mode for 2.4 GHz: For best performance, set "N only" if you no longer
-use B or G capable devices. Or, as noted above, you can use mixed n and
-ax mode.
-
-- Network names: Do not set the 2.4 GHz Network, 5 GHz Network or the
-6 GHz Network to the same name. Note: Unfortunately many routers come
-with all networks set to the same name. You need to be able to control
-which network that is in use so changing the name of one of the networks
-is recommended. Since many IoT devices use the 2.4 GHz network, it may
-be better to change the names of the 5 GHz and 6 GHz networks.
-
-- Channels for 5 GHz: Not all devices are capable of using DFS channels
-(I'm looking at you Roku.) It may be necessary to set a fixed channel in
-the range of 36 to 48 or 149 to 165 in order for all of your devices to
-work on 5 GHz. (For US, other countries may vary.)
-
-- Best location for the WiFi router/access point: Near center of
-apartment or house, at least a couple of feet away from walls, in an
-elevated location. You may have to test to see what the best location is
-in your environment.
-
-- Check congestion: There are apps available for smart phones that allow
-you to get an idea of the congestion levels on WiFi channels. The apps
-generally go by the name of `WiFi Analyzer` or something similar.
-
-After making and saving changes, reboot the router.
-
------
-
-### Recommendations regarding USB
-
-- Moving your USB WiFi adapter to a different USB port has been known to
-fix a variety of problems. Don't ask.
-
-- If connecting your USB WiFi adapter to a desktop computer, use the USB
-ports on the rear of the computer. Why? The ports on the rear are
-directly connected to the motherboard which will reduce problems with
-interference and disconnection. A good quality usb extension cable may
-be useful to place the adapter in a location where the signal is good.
-
-- If your USB WiFi adapter is USB 3 capable and you want it to operate
-in USB3 mode, plug it into a USB 3 port.
-
-- Avoid USB 3.1 Gen 2 ports if possible as most currently available
-adapters have been tested with USB 3.1 Gen 1 (aka USB 3) and not with
-USB 3.1 Gen 2.
-
-- Modern USB 3.1 Gen 2 ports can be problematic with some adapters,
-especially older adapters. You may need to check USB setting in your
-BIOS to see if changing setting can help compatibility.
-
-- If you use an extension cable and your adapter is USB 3 capable, the
-cable needs to be USB 3 capable (if not, you will be limited to USB 2
-speeds).
-
-- Extention cables can be problematic. A way to check if the extension
-cable is the problem is to plug the adapter temporarily into a USB port
-on the computer.
-
-- Some USB WiFi adapters require considerable electrical current and
-push the capabilities of the power available via USB port. One example
-is adapters that use the Realtek 8814au chipset. Using a powered
-multiport USB extension can be a good idea in cases like this.
-
------
-
-To Contribute:
-
-- Fork this repository.
-- Make your edits.
-- TEST!
-- Create a pull request.
-
------
-
-#### [Go to Main Menu](https://github.com/morrownr/USB-WiFi)
-
------
+Licensed under the **GNU General Public License v2.0** ([`LICENSE`](LICENSE)).  
+*73 de 9M2PJU!* 📻
