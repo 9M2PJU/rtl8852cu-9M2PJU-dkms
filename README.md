@@ -302,7 +302,6 @@ If this driver saved you hours of kernel debugging or got your Wi-Fi 6/6E USB ad
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy_Me_A_Coffee-9m2pju-FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=black)](https://www.buymeacoffee.com/9m2pju)
 [![PayPal](https://img.shields.io/badge/PayPal-9M2PJU-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://www.paypal.com/paypalme/9M2PJU)
 [![Wise](https://img.shields.io/badge/Wise-faizulz13-9FE870?style=for-the-badge&logo=wise&logoColor=black)](https://wise.com/pay/me/faizulz13)
-[![DuitNow QR](https://img.shields.io/badge/DuitNow_QR_(Malaysia)-Scan_QR-ED2C67?style=for-the-badge&logo=qrcode&logoColor=white)](https://callsign.hamradio.my/qr.png)
 
 </div>
 
