@@ -7,7 +7,7 @@
 
 [![Linux Kernel](https://img.shields.io/badge/Linux_Kernel-5.15_%E2%80%93_7.3%2B-FCC624?style=for-the-badge&logo=linux&logoColor=black)](https://kernel.org)
 [![Compiler](https://img.shields.io/badge/Compiler-GCC_%26_Clang%2FLLVM-262D3A?style=for-the-badge&logo=llvm&logoColor=white)](#compilers--distributions)
-[![AUR](https://img.shields.io/badge/AUR-rtl8852cu--dkms--morrownr--git-1793D1?style=for-the-badge&logo=archlinux&logoColor=white)](https://aur.archlinux.org/packages/rtl8852cu-dkms-morrownr-git)
+[![AUR](https://img.shields.io/badge/AUR-rtl8852cu--9m2pju--dkms--git-1793D1?style=for-the-badge&logo=archlinux&logoColor=white)](https://aur.archlinux.org/packages/rtl8852cu-9m2pju-dkms-git)
 [![License: GPL v2](https://img.shields.io/badge/License-GPL--2.0-blue?style=for-the-badge)](LICENSE)
 [![Driver Version](https://img.shields.io/badge/Realtek_Base-v1.19.2.1_(20240510)-00ADD8?style=for-the-badge)](#about)
 
@@ -78,7 +78,7 @@
 ### Option 1: Arch Linux / CachyOS via AUR (Recommended)
 
 ```bash
-yay -S rtl8852cu-dkms-morrownr-git
+yay -S rtl8852cu-9m2pju-dkms-git
 ```
 
 Blacklist the in-kernel `rtw89_8852cu` driver so `8852cu` binds cleanly:
