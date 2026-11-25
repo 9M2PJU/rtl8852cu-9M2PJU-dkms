@@ -7,13 +7,15 @@
 
 [![Linux Kernel](https://img.shields.io/badge/Linux_Kernel-5.15_%E2%80%93_7.3%2B-FCC624?style=for-the-badge&logo=linux&logoColor=black)](https://kernel.org)
 [![Compiler](https://img.shields.io/badge/Compiler-GCC_%26_Clang%2FLLVM-262D3A?style=for-the-badge&logo=llvm&logoColor=white)](#compilers--distributions)
-[![AUR](https://img.shields.io/badge/AUR-rtl8852cu--9m2pju--dkms--git-1793D1?style=for-the-badge&logo=archlinux&logoColor=white)](https://aur.archlinux.org/packages/rtl8852cu-9m2pju-dkms-git)
+[![AUR Stable](https://img.shields.io/badge/AUR-rtl8852cu--9m2pju--dkms-1793D1?style=for-the-badge&logo=archlinux&logoColor=white)](https://aur.archlinux.org/packages/rtl8852cu-9m2pju-dkms)
+[![AUR Git](https://img.shields.io/badge/AUR_Git-rtl8852cu--9m2pju--dkms--git-1793D1?style=for-the-badge&logo=archlinux&logoColor=white)](https://aur.archlinux.org/packages/rtl8852cu-9m2pju-dkms-git)
+[![Companion GUI App](https://img.shields.io/badge/AP_GUI_App-AirCast--AP-4A86CF?style=for-the-badge&logo=gnome&logoColor=white)](https://github.com/9M2PJU/AirCast-AP)
 [![License: GPL v2](https://img.shields.io/badge/License-GPL--2.0-blue?style=for-the-badge)](LICENSE)
 [![Driver Version](https://img.shields.io/badge/Realtek_Base-v1.19.2.1_(20240510)-00ADD8?style=for-the-badge)](#about)
 
 [✨ What's Changed](#-whats-changed-in-this-fork) •
 [🪄 1-Line Installer](#-1-line-interactive-installer-recommended) •
-[📶 Interactive AP Mode](#-interactive-ap--hotspot-mode-ap-modesh) •
+[📶 AP Mode & AirCast-AP](#-ap--hotspot-mode--desktop-app--cli-wizard) •
 [🚀 USB 3.0 High-Speed](#-usb-30-superspeed-tuning) •
 [🔌 Supported Devices](#-supported-usb-devices) •
 [☕ Support](#-support-this-project)
@@ -100,6 +102,10 @@ curl -fsSL https://raw.githubusercontent.com/9M2PJU/rtl8852cu-9M2PJU-dkms/main/s
 ### Option 1: Arch Linux / CachyOS via AUR (Recommended)
 
 ```bash
+# Tagged stable release (recommended — fast tarball + verified SHA256):
+yay -S rtl8852cu-9m2pju-dkms
+
+# Or bleeding-edge git HEAD:
 yay -S rtl8852cu-9m2pju-dkms-git
 ```
 
@@ -216,9 +222,20 @@ lsusb -t | grep -i rtl8852cu
 
 ---
 
-## 📶 Interactive AP / Hotspot Mode (`ap-mode.sh`)
+## 📶 AP / Hotspot Mode — Desktop App & CLI Wizard
 
-Turn your RTL8852CU / RTL8832CU USB adapter into a **Wi-Fi 6 (802.11ax) Access Point** in seconds with the built-in interactive wizard:
+### 🖥️ Recommended: [**AirCast-AP**](https://github.com/9M2PJU/AirCast-AP) (Dedicated GTK4 + Libadwaita GUI & CLI App)
+
+Want a full **native Wayland/GTK4 desktop app** for turning your RTL8852CU (or any Linux Wi-Fi card) into a **Wi-Fi 6 / 5 GHz Access Point** with **live scannable QR codes**, **connected-client monitoring**, **1-click RTL8852CU Wi-Fi 6 AP tuning**, and **NAT internet sharing**?
+
+> 🚀 **Check out our companion app: [`9M2PJU/AirCast-AP`](https://github.com/9M2PJU/AirCast-AP)**
+> ```bash
+> curl -fsSL https://raw.githubusercontent.com/9M2PJU/AirCast-AP/main/install.sh | bash
+> ```
+
+### 🧰 Lightweight Built-in Script (`ap-mode.sh`)
+
+Prefer a zero-GUI terminal wizard right from this repo?
 
 ```bash
 # Run directly (1-liner):
