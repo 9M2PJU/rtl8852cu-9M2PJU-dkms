@@ -230,8 +230,29 @@ Want a full **native Wayland/GTK4 desktop app** for turning your RTL8852CU (or a
 
 > 🚀 **Check out our companion app: [`9M2PJU/AirCast-AP`](https://github.com/9M2PJU/AirCast-AP)**
 > ```bash
+> # Arch / CachyOS (AUR):
+> yay -S aircast-ap
+>
+> # All Linux distros (1-liner):
 > curl -fsSL https://raw.githubusercontent.com/9M2PJU/AirCast-AP/main/install.sh | bash
 > ```
+
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <a href="https://github.com/9M2PJU/AirCast-AP">
+        <img src="https://raw.githubusercontent.com/9M2PJU/AirCast-AP/main/docs/screenshots/aircast-main.png" alt="AirCast-AP Main GUI" width="100%" />
+      </a><br/>
+      <b>AirCast-AP — RTL8852CU Wi-Fi 6 AP Detection &amp; 1-Click Tuning</b>
+    </td>
+    <td align="center" width="50%">
+      <a href="https://github.com/9M2PJU/AirCast-AP">
+        <img src="https://raw.githubusercontent.com/9M2PJU/AirCast-AP/main/docs/screenshots/aircast-qr-clients.png" alt="AirCast-AP QR Code and Connected Clients" width="100%" />
+      </a><br/>
+      <b>Live Wi-Fi QR Code &amp; Connected Clients Monitor</b>
+    </td>
+  </tr>
+</table>
 
 ### 🧰 Lightweight Built-in Script (`ap-mode.sh`)
 
