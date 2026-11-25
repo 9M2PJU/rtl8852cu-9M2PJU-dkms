@@ -20,4 +20,18 @@ if [ "$sproc" -gt 1 ]; then
 fi
 
 kernelver=${kernelver:-$(uname -r)}
-make "-j$sproc" "KVER=$kernelver" "KSRC=/lib/modules/$kernelver/build" "KBUILD_MODPOST_WARN=1"
+ksrc="/lib/modules/$kernelver/build"
+
+# Auto-detect Clang/LLVM-built kernels (e.g. CachyOS)
+llvm_flag=""
+if [ -r "$ksrc/.config" ] && grep -q '^CONFIG_CC_IS_CLANG=y' "$ksrc/.config"; then
+	llvm_flag="LLVM=1"
+elif [ -r "$ksrc/include/config/auto.conf" ] && grep -q '^CONFIG_CC_IS_CLANG=y' "$ksrc/include/config/auto.conf"; then
+	llvm_flag="LLVM=1"
+fi
+
+if [ -n "$llvm_flag" ]; then
+	make "$llvm_flag" "-j$sproc" "KVER=$kernelver" "KSRC=$ksrc" "KBUILD_MODPOST_WARN=1"
+else
+	make "-j$sproc" "KVER=$kernelver" "KSRC=$ksrc" "KBUILD_MODPOST_WARN=1"
+fi

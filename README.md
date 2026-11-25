@@ -1,9 +1,17 @@
-## rtl8852cu ( 8852cu.ko ) :rocket:
+## rtl8852cu-9M2PJU-dkms (`8852cu.ko`) :rocket:
 
-## Linux Driver for USB WiFi Adapters that are based on the RTL8832CU and RTL8852CU Chipsets
+## Linux DKMS Driver for USB WiFi Adapters Based on the RTL8832CU and RTL8852CU Chipsets
 
-- v1.19.2.1 (Realtek) (20240510) plus updates from the Linux community
-- Realtek development of this driver is ongoing.
+- Maintained fork by **9M2PJU** (`https://github.com/9M2PJU/rtl8852cu-9M2PJU-dkms`) based on Realtek v1.19.2.1 (20240510), `morrownr/rtl8852cu-20240510`, and community kernel patches.
+- Updated for **Linux 6.18 – 7.3+ kernels** and **Clang/LLVM-built kernels** (such as CachyOS) as well as standard GCC kernels.
+
+### What's Updated in This Fork
+
+- **Linux 7.3+ `cfg80211_ops` compatibility**: updated `add_key`, `get_key`, `del_key`, `set_default_mgmt_key`, `get_station`, `add_station`, `del_station`, `change_station`, `dump_station`, `cfg80211_new_sta`, `cfg80211_del_sta`, `remain_on_channel`, `mgmt_tx`, and `set_tx_power` (`radio_idx`) signatures — fixes kernel page-fault oops (`BUG: unable to handle page fault`) on connect/key-add.
+- **Removed `strncpy()` compatibility**: replaced legacy `strncpy()` calls with `strscpy()` / `memcpy()` and an inline `_os_strncpy()` helper for newer kernels and Clang/LLVM builds.
+- **Clang/LLVM kernel auto-detection in `dkms-make.sh`**: automatically passes `LLVM=1` when `CONFIG_CC_IS_CLANG=y` is detected in kernel headers (works seamlessly on CachyOS and standard GCC distros).
+- **PPPoE header compatibility & clean `CONFIG_BR_EXT=n` build**: safe byte-offset access in `rtw_br_ext.c` and stub guard in `rtw_xmit.c`.
+- **Clean DKMS config**: removed deprecated `CLEAN` directive from `dkms.conf`.
 
 Note: Please read the file "supported-device-IDs" for information about
 how to confirm that this is the correct driver for your adapter.
@@ -70,20 +78,23 @@ Note: Additional CPU architectures may work but have not been tested.
 ### Compatible Kernels
 
 - Kernels: 5.15 - 6.6  (Realtek)
-- Kernels: 6.7  - 6.18 (community support)
+- Kernels: 6.7  - 7.3+ (community & 9M2PJU fork support)
 
 Note: Kernels earlier than 5.10 may work but have not been tested.
 
 ### Tested Compilers
 
-- gcc 13, 14 and 15
+- gcc 13, 14, 15, 16
+- clang / LLVM (auto-detected by `dkms-make.sh` for Clang-built kernels like CachyOS)
 
 ### Tested Linux Distributions
 
 Note: The information in this section depends largely on user reports
 which can be provided via PR or message in Issues.
 
-- [Arch Linux](https://www.archlinux.org) (kernels 5.4, 5.11 and 6.16)
+- [Arch Linux](https://www.archlinux.org) (kernels 5.4, 5.11, 6.16)
+
+- [CachyOS](https://cachyos.org) (kernel 7.3.6-1-cachyos, Clang/LLVM)
 
 - [Debian](https://www.debian.org/) (kernels 5.10, 5.15, 6.1 and 6.12)
 
@@ -385,13 +396,13 @@ cd ~/src
 #### Step 6: Download the driver
 
 ```
-git clone https://github.com/morrownr/rtl8852cu-20240510.git
+git clone https://github.com/9M2PJU/rtl8852cu-9M2PJU-dkms.git
 ```
 
 #### Step 7: Move to the newly created driver directory
 
 ```
-cd ~/src/rtl8852cu-20240510
+cd ~/src/rtl8852cu-9M2PJU-dkms
 ```
 
 #### Step 8: Run the installation script (`install-driver.sh`)
@@ -616,7 +627,7 @@ kernel 5.10 to kernel 5.15)
 #### Step 1: Move to the driver directory
 
 ```
-cd ~/src/rtl8852cu-20240510
+cd ~/src/rtl8852cu-9M2PJU-dkms
 ```
 
 #### Step 2: Pull updated code from this repo
@@ -648,7 +659,7 @@ The driver directory can be deleted after running this script.
 #### Step 2: Move to the driver directory
 
 ```
-cd ~/src/rtl8852cu-20240510
+cd ~/src/rtl8852cu-9M2PJU-dkms
 ```
 
 #### Step 3: Run the removal script
