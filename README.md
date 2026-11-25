@@ -12,12 +12,11 @@
 [![Driver Version](https://img.shields.io/badge/Realtek_Base-v1.19.2.1_(20240510)-00ADD8?style=for-the-badge)](#about)
 
 [✨ What's Changed](#-whats-changed-in-this-fork) •
-[🪄 1-Line Interactive Installer](#-1-line-interactive-installer-recommended) •
-[⚡ Manual / AUR Install](#-quick-installation) •
-[🚀 USB 3.0 High-Speed Mode](#-usb-30-superspeed-tuning) •
+[🪄 1-Line Installer](#-1-line-interactive-installer-recommended) •
+[📶 Interactive AP Mode](#-interactive-ap--hotspot-mode-ap-modesh) •
+[🚀 USB 3.0 High-Speed](#-usb-30-superspeed-tuning) •
 [🔌 Supported Devices](#-supported-usb-devices) •
-[🛠️ Troubleshooting](#️-troubleshooting--tips) •
-[☕ Support / Donate](#-support-this-project)
+[☕ Support](#-support-this-project)
 
 </div>
 
@@ -44,6 +43,7 @@
 | **PPPoE Header & `CONFIG_BR_EXT` Fix** | `core/rtw_br_ext.c`, `core/rtw_xmit.c`, `Makefile` | Uses wire-layout byte offsets (`RTW_PPPOE_TAG` / `RTW_PPPOE_TAG_DATA`) for hidden kernel `pppoe_hdr` fields, disables `CONFIG_BR_EXT` cleanly, and adds a `#else` stub + `#ifdef CONFIG_BR_EXT` guard for `core_br_client_tx` (fixes `Unknown symbol core_br_client_tx`). |
 | **Clean DKMS Config** | `dkms.conf` | Removed the deprecated `CLEAN` directive that caused DKMS warnings on modern `dkms` versions. |
 | **Interactive 1-Line Installer** | `setup.sh` | Added guided `curl \| bash` installer that auto-detects distro, kernel, Clang/GCC, and USB adapter, then asks for install method (AUR vs GitHub DKMS), USB 3.0/2.0 mode, `rtw89_8852cu` blacklisting, and live module reload. |
+| **Interactive Wi-Fi 6 AP Wizard** | `ap-mode.sh` | Added guided AP / hotspot script supporting both **`hostapd` + `dnsmasq` + `nftables`/`iptables` NAT** (full 5 GHz / 80 MHz Wi-Fi 6, WPA2/WPA3) and **NetworkManager (`nmcli`)** quick hotspot, with `--status`, `--stop`, QR code output, and automatic `rtw_he_enable=2 rtw_vht_enable=2` setup. |
 
 ### 📜 Prior Community Kernel Patches Included
 - **Linux 6.18** (`df11acd`) — `cfg80211` / timer / kernel API updates
@@ -212,7 +212,29 @@ lsusb -t | grep -i rtl8852cu
 | **Kernel Errors / Packet Loss** | 0 / 0% | **0 / 0%** | Rock solid |
 
 > [!TIP]
-> See [`8852cu.conf`](8852cu.conf) or run `sudo ./edit-options.sh` for all supported module parameters, and [`hostapd-rtl8852cu.conf`](hostapd-rtl8852cu.conf) for AP mode configuration.
+> See [`8852cu.conf`](8852cu.conf) or run `sudo ./edit-options.sh` for all supported module parameters, and [`hostapd-rtl8852cu.conf`](hostapd-rtl8852cu.conf) for raw `hostapd` reference settings.
+
+---
+
+## 📶 Interactive AP / Hotspot Mode (`ap-mode.sh`)
+
+Turn your RTL8852CU / RTL8832CU USB adapter into a **Wi-Fi 6 (802.11ax) Access Point** in seconds with the built-in interactive wizard:
+
+```bash
+# Run directly (1-liner):
+curl -fsSL https://raw.githubusercontent.com/9M2PJU/rtl8852cu-9M2PJU-dkms/main/ap-mode.sh | sudo bash
+
+# Or from a local clone:
+sudo ./ap-mode.sh          # Launch interactive AP wizard
+sudo ./ap-mode.sh --status # View active AP info & connected clients
+sudo ./ap-mode.sh --stop   # Stop AP, clear NAT rules, restore client mode
+```
+
+**What `ap-mode.sh` handles automatically:**
+- Auto-detects your `8852cu` interface (`wlan1`) and offers to enable `rtw_he_enable=2 rtw_vht_enable=2` in `/etc/modprobe.d/8852cu.conf` for full Wi-Fi 6 / 80 MHz AP mode
+- Lets you choose between **`hostapd` + `dnsmasq` + NAT** (full Wi-Fi 6, 5 GHz 80 MHz / 2.4 GHz, WPA2 / WPA2+WPA3 / WPA3-SAE) or **NetworkManager (`nmcli`)** quick hotspot
+- Configures IP forwarding + clean `nftables` (or `iptables`) NAT internet sharing from your chosen upstream interface
+- Prints a terminal **Wi-Fi QR code** if `qrencode` is installed, and cleanly tears everything down on `Ctrl+C` or `--stop`
 
 ---
 
