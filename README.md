@@ -16,7 +16,8 @@
 [⚡ Manual / AUR Install](#-quick-installation) •
 [🚀 USB 3.0 High-Speed Mode](#-usb-30-superspeed-tuning) •
 [🔌 Supported Devices](#-supported-usb-devices) •
-[🛠️ Troubleshooting](#️-troubleshooting--tips)
+[🛠️ Troubleshooting](#️-troubleshooting--tips) •
+[☕ Support / Donate](#-support-this-project)
 
 </div>
 
@@ -266,6 +267,22 @@ sudo ./uninstall-driver.sh
   grep '[[:alnum:]]' /sys/module/8852cu/parameters/*
   ```
 - **USB stability:** Plug directly into a motherboard USB 3.0 port (avoid unshielded extension cables or underpowered hubs).
+
+---
+
+## ☕ Support This Project
+
+If this driver saved you hours of kernel debugging or got your Wi-Fi 6/6E USB adapter running smoothly on Linux 7.3+ / CachyOS, consider supporting ongoing maintenance and amateur radio / open-source projects by **9M2PJU**:
+
+<div align="center">
+
+[![GitHub Sponsors](https://img.shields.io/badge/GitHub_Sponsors-9M2PJU-EA4AAA?style=for-the-badge&logo=githubsponsors&logoColor=white)](https://github.com/sponsors/9M2PJU)
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy_Me_A_Coffee-9m2pju-FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=black)](https://www.buymeacoffee.com/9m2pju)
+[![PayPal](https://img.shields.io/badge/PayPal-9M2PJU-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://www.paypal.com/paypalme/9M2PJU)
+[![Wise](https://img.shields.io/badge/Wise-faizulz13-9FE870?style=for-the-badge&logo=wise&logoColor=black)](https://wise.com/pay/me/faizulz13)
+[![DuitNow QR](https://img.shields.io/badge/DuitNow_QR_(Malaysia)-Scan_QR-ED2C67?style=for-the-badge&logo=qrcode&logoColor=white)](https://callsign.hamradio.my/qr.png)
+
+</div>
 
 ---
 
