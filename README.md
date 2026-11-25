@@ -3,9 +3,9 @@
 # 📡 rtl8852cu-9M2PJU-dkms (`8852cu.ko`)
 
 **Linux DKMS Driver for Realtek RTL8832CU & RTL8852CU Wi-Fi 6 / 6E USB Adapters**  
-*Maintained by **9M2PJU** — updated for modern **Linux 6.18 – 7.3+**, **Clang/LLVM (CachyOS)**, and **GCC** kernels.*
+*Maintained by **9M2PJU** - updated for modern **Linux 6.18 - 7.3+**, **Clang/LLVM (CachyOS)**, and **GCC** kernels.*
 
-[![Linux Kernel](https://img.shields.io/badge/Linux_Kernel-5.15_%E2%80%93_7.3%2B-FCC624?style=for-the-badge&logo=linux&logoColor=black)](https://kernel.org)
+[![Linux Kernel](https://img.shields.io/badge/Linux_Kernel-5.15_-_7.3%2B-FCC624?style=for-the-badge&logo=linux&logoColor=black)](https://kernel.org)
 [![Compiler](https://img.shields.io/badge/Compiler-GCC_%26_Clang%2FLLVM-262D3A?style=for-the-badge&logo=llvm&logoColor=white)](#compilers--distributions)
 [![AUR Stable](https://img.shields.io/badge/AUR-rtl8852cu--9m2pju--dkms-1793D1?style=for-the-badge&logo=archlinux&logoColor=white)](https://aur.archlinux.org/packages/rtl8852cu-9m2pju-dkms)
 [![AUR Git](https://img.shields.io/badge/AUR_Git-rtl8852cu--9m2pju--dkms--git-1793D1?style=for-the-badge&logo=archlinux&logoColor=white)](https://aur.archlinux.org/packages/rtl8852cu-9m2pju-dkms-git)
@@ -29,13 +29,13 @@
 `rtl8852cu-9M2PJU-dkms` is an actively maintained DKMS fork of the Realtek **v1.19.2.1 (20240510)** `8852cu.ko` out-of-tree USB Wi-Fi driver (originating from `morrownr/rtl8852cu-20240510` and `parheliamm/rtl8852cu-20240510`), patched to compile cleanly and run stably on bleeding-edge Linux **7.3+** kernels and **Clang/LLVM-built kernels** such as **CachyOS**.
 
 > [!NOTE]
-> **In-kernel driver note:** Linux includes an in-kernel `rtw89_8852cu` driver. If `rtw89_8852cu` works well on your kernel, prefer it. Use this DKMS driver when you need Realtek's vendor PHY/Wi-Fi 6/AP/USB-mode features or hit regressions with `rtw89_8852cu` — make sure to blacklist `rtw89_8852cu` when using `8852cu` so the two drivers do not conflict.
+> **In-kernel driver note:** Linux includes an in-kernel `rtw89_8852cu` driver. If `rtw89_8852cu` works well on your kernel, prefer it. Use this DKMS driver when you need Realtek's vendor PHY/Wi-Fi 6/AP/USB-mode features or hit regressions with `rtw89_8852cu` - make sure to blacklist `rtw89_8852cu` when using `8852cu` so the two drivers do not conflict.
 
 ---
 
 ## ✨ What's Changed in This Fork
 
-### 🆕 `2026-11-26` — Linux 7.3+ & Clang/LLVM Release (`8750f22`)
+### 🆕 `2026-11-26` - Linux 7.3+ & Clang/LLVM Release (`8750f22`)
 
 | Area | File(s) | Change & Why It Matters |
 | :--- | :--- | :--- |
@@ -48,10 +48,10 @@
 | **Interactive Wi-Fi 6 AP Wizard** | `ap-mode.sh` | Added guided AP / hotspot script supporting both **`hostapd` + `dnsmasq` + `nftables`/`iptables` NAT** (full 5 GHz / 80 MHz Wi-Fi 6, WPA2/WPA3) and **NetworkManager (`nmcli`)** quick hotspot, with `--status`, `--stop`, QR code output, and automatic `rtw_he_enable=2 rtw_vht_enable=2` setup. |
 
 ### 📜 Prior Community Kernel Patches Included
-- **Linux 6.18** (`df11acd`) — `cfg80211` / timer / kernel API updates
-- **Linux 6.17** (`7a5f2c6`, `#38`) — `cfg80211` `radio_idx` support
-- **Linux 6.16** (`c01bd40`) — kernel 6.16 compatibility fixes
-- **Linux 5.15 – 6.15** — Realtek v1.19.2.1 (20240510) + `morrownr` & community patches
+- **Linux 6.18** (`df11acd`) - `cfg80211` / timer / kernel API updates
+- **Linux 6.17** (`7a5f2c6`, `#38`) - `cfg80211` `radio_idx` support
+- **Linux 6.16** (`c01bd40`) - kernel 6.16 compatibility fixes
+- **Linux 5.15 - 6.15** - Realtek v1.19.2.1 (20240510) + `morrownr` & community patches
 
 ---
 
@@ -71,7 +71,7 @@
 
 | Category | Supported / Verified |
 | :--- | :--- |
-| **Linux Kernels** | `5.15 – 6.6` (Realtek) • `6.7 – 6.18` (community) • **`6.19 – 7.3+` (9M2PJU fork)** |
+| **Linux Kernels** | `5.15 - 6.6` (Realtek) • `6.7 - 6.18` (community) • **`6.19 - 7.3+` (9M2PJU fork)** |
 | **Compilers** | **GCC** 13, 14, 15, 16 • **Clang / LLVM** (auto-detected by `dkms-make.sh`) |
 | **CPU Architectures** | `x86_64` / `amd64`, `i386`/`i686`, `aarch64` (`arm64`), `armv6l`/`armv7l`, `riscv` |
 | **Verified Distros** | **CachyOS** (`7.3.6-1-cachyos`, Clang/LLVM), **Arch Linux**, **Debian**, **Ubuntu**, **Fedora**, **Manjaro**, **openSUSE Tumbleweed**, **Raspberry Pi OS**, **Zorin OS** |
@@ -80,17 +80,17 @@
 
 ## 🪄 1-Line Interactive Installer (Recommended)
 
-Run a single command — `setup.sh` auto-detects your **distro**, **kernel**, **GCC vs Clang/LLVM**, and **USB adapter**, then walks you through clean interactive prompts:
+Run a single command - `setup.sh` auto-detects your **distro**, **kernel**, **GCC vs Clang/LLVM**, and **USB adapter**, then walks you through clean interactive prompts:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/9M2PJU/rtl8852cu-9M2PJU-dkms/main/setup.sh | bash
 ```
 
 **What the interactive wizard asks & handles for you:**
-1. **Install / Upgrade / Configure / Uninstall** — offers AUR (`yay`/`paru`) automatically on Arch/CachyOS, or GitHub DKMS (`install-driver.sh`) on any distro (Debian, Ubuntu, Fedora, openSUSE, etc.)
-2. **USB Speed Mode** — choose between **USB 3.0 SuperSpeed (`5000M`)** for max throughput or **USB 2.0 (`480M`)** for hub compatibility (or keep existing `8852cu.conf`)
-3. **In-Kernel Driver Blacklist** — optionally writes `/etc/modprobe.d/blacklist-rtw89-8852cu.conf` so `8852cu` binds without conflict
-4. **Build Dependencies & Live Reload** — optionally installs matching kernel headers (`linux-cachyos-headers`, `linux-headers`, etc.) and reloads `8852cu` immediately with no reboot required
+1. **Install / Upgrade / Configure / Uninstall** - offers AUR (`yay`/`paru`) automatically on Arch/CachyOS, or GitHub DKMS (`install-driver.sh`) on any distro (Debian, Ubuntu, Fedora, openSUSE, etc.)
+2. **USB Speed Mode** - choose between **USB 3.0 SuperSpeed (`5000M`)** for max throughput or **USB 2.0 (`480M`)** for hub compatibility (or keep existing `8852cu.conf`)
+3. **In-Kernel Driver Blacklist** - optionally writes `/etc/modprobe.d/blacklist-rtw89-8852cu.conf` so `8852cu` binds without conflict
+4. **Build Dependencies & Live Reload** - optionally installs matching kernel headers (`linux-cachyos-headers`, `linux-headers`, etc.) and reloads `8852cu` immediately with no reboot required
 
 > [!TIP]
 > Prefer to inspect the script before running? View [`setup.sh`](setup.sh) directly in this repo, or run `bash <(curl -fsSL https://raw.githubusercontent.com/9M2PJU/rtl8852cu-9M2PJU-dkms/main/setup.sh)`.
@@ -102,7 +102,7 @@ curl -fsSL https://raw.githubusercontent.com/9M2PJU/rtl8852cu-9M2PJU-dkms/main/s
 ### Option 1: Arch Linux / CachyOS via AUR (Recommended)
 
 ```bash
-# Tagged stable release (recommended — fast tarball + verified SHA256):
+# Tagged stable release (recommended - fast tarball + verified SHA256):
 yay -S rtl8852cu-9m2pju-dkms
 
 # Or bleeding-edge git HEAD:
@@ -222,7 +222,7 @@ lsusb -t | grep -i rtl8852cu
 
 ---
 
-## 📶 AP / Hotspot Mode — Desktop App & CLI Wizard
+## 📶 AP / Hotspot Mode - Desktop App & CLI Wizard
 
 ### 🖥️ Recommended: [**AirCast-AP**](https://github.com/9M2PJU/AirCast-AP) (Dedicated GTK4 + Libadwaita GUI & CLI App)
 
@@ -243,7 +243,7 @@ Want a full **native Wayland/GTK4 desktop app** for turning your RTL8852CU (or a
       <a href="https://github.com/9M2PJU/AirCast-AP">
         <img src="https://raw.githubusercontent.com/9M2PJU/AirCast-AP/main/docs/screenshots/aircast-main.png" alt="AirCast-AP Main GUI" width="100%" />
       </a><br/>
-      <b>AirCast-AP — RTL8852CU Wi-Fi 6 AP Detection &amp; 1-Click Tuning</b>
+      <b>AirCast-AP - RTL8852CU Wi-Fi 6 AP Detection &amp; 1-Click Tuning</b>
     </td>
     <td align="center" width="50%">
       <a href="https://github.com/9M2PJU/AirCast-AP">
@@ -347,9 +347,9 @@ If this driver saved you hours of kernel debugging or got your Wi-Fi 6/6E USB ad
 
 ## 🙏 Credits & License
 
-- **Realtek Semiconductor Corp.** — Upstream `rtl8852cu` driver (`v1.19.2.1`)
-- **[morrownr](https://github.com/morrownr/USB-WiFi)** & **[parheliamm](https://github.com/parheliamm/rtl8852cu-20240510)** — Original Linux community packaging, DKMS scripts, and kernel 6.x patches
-- **9M2PJU** ([hamradio.my](https://hamradio.my)) — Linux 7.3+ `cfg80211` fixes, Clang/LLVM auto-detection, AUR maintenance
+- **Realtek Semiconductor Corp.** - Upstream `rtl8852cu` driver (`v1.19.2.1`)
+- **[morrownr](https://github.com/morrownr/USB-WiFi)** & **[parheliamm](https://github.com/parheliamm/rtl8852cu-20240510)** - Original Linux community packaging, DKMS scripts, and kernel 6.x patches
+- **9M2PJU** ([hamradio.my](https://hamradio.my)) - Linux 7.3+ `cfg80211` fixes, Clang/LLVM auto-detection, AUR maintenance
 
 Licensed under the **GNU General Public License v2.0** ([`LICENSE`](LICENSE)).  
 *73 de 9M2PJU!* 📻

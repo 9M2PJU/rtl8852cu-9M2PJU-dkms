@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# rtl8852cu-9M2PJU-dkms — Interactive One-Liner Installer
+# rtl8852cu-9M2PJU-dkms - Interactive One-Liner Installer
 # Repository: https://github.com/9M2PJU/rtl8852cu-9M2PJU-dkms
 # Maintainer: 9M2PJU (https://hamradio.my)
 #
@@ -68,8 +68,8 @@ prompt_choice() {
 
 # --- Banner & System Detection ------------------------------------------------
 printf "\n${CYAN}╭──────────────────────────────────────────────────────────────╮${RESET}\n"
-printf "${CYAN}│${RESET}  ${BOLD}📡 rtl8852cu-9M2PJU-dkms — Interactive Linux Installer${RESET}      ${CYAN}│${RESET}\n"
-printf "${CYAN}│${RESET}  ${DIM}Realtek RTL8832CU / RTL8852CU • Linux 5.15–7.3+ • GCC/LLVM${RESET}  ${CYAN}│${RESET}\n"
+printf "${CYAN}│${RESET}  ${BOLD}📡 rtl8852cu-9M2PJU-dkms - Interactive Linux Installer${RESET}      ${CYAN}│${RESET}\n"
+printf "${CYAN}│${RESET}  ${DIM}Realtek RTL8832CU / RTL8852CU • Linux 5.15-7.3+ • GCC/LLVM${RESET}  ${CYAN}│${RESET}\n"
 printf "${CYAN}╰──────────────────────────────────────────────────────────────╯${RESET}\n\n"
 
 if [ ! -e /dev/tty ]; then
@@ -131,7 +131,7 @@ if [ "${EUID}" -ne 0 ]; then
 fi
 
 # --- Interactive Questions ----------------------------------------------------
-printf "${BOLD}Step 1/4 — Choose Action & Installation Method${RESET}\n"
+printf "${BOLD}Step 1/4 - Choose Action & Installation Method${RESET}\n"
 if [ "$IS_ARCH" -eq 1 ] && [ -n "$AUR_HELPER" ]; then
     printf "   1) Install / Upgrade via AUR (${BOLD}%s -S %s${RESET}) [Recommended for Arch/CachyOS]\n" "$AUR_HELPER" "$AUR_PKG"
     printf "   2) Install / Upgrade from GitHub via DKMS (${BOLD}install-driver.sh${RESET})\n"
@@ -176,13 +176,13 @@ if [ "$ACTION" -eq 4 ]; then
     exit 0
 fi
 
-printf "\n${BOLD}Step 2/4 — USB Speed Mode (rtw_switch_usb_mode)${RESET}\n"
-printf "   1) ${BOLD}USB 3.0 SuperSpeed (5000M)${RESET} — Best throughput & lowest latency (Recommended for USB 3 ports)\n"
-printf "   2) ${BOLD}USB 2.0 High-Speed (480M)${RESET}  — Maximum compatibility on noisy hubs or USB 2 ports\n"
+printf "\n${BOLD}Step 2/4 - USB Speed Mode (rtw_switch_usb_mode)${RESET}\n"
+printf "   1) ${BOLD}USB 3.0 SuperSpeed (5000M)${RESET} - Best throughput & lowest latency (Recommended for USB 3 ports)\n"
+printf "   2) ${BOLD}USB 2.0 High-Speed (480M)${RESET}  - Maximum compatibility on noisy hubs or USB 2 ports\n"
 printf "   3) Keep existing ${MODOPT_FILE} unchanged\n"
 USB_CHOICE="$(prompt_choice "Select USB mode (1-3):" "1" "3")"
 
-printf "\n${BOLD}Step 3/4 — In-Kernel Driver Conflict Prevention${RESET}\n"
+printf "\n${BOLD}Step 3/4 - In-Kernel Driver Conflict Prevention${RESET}\n"
 DO_BLACKLIST=0
 if prompt_yn "Blacklist in-kernel 'rtw89_8852cu' so '8852cu' binds cleanly?" "y"; then
     DO_BLACKLIST=1
@@ -191,7 +191,7 @@ fi
 DO_DEPS=0
 SRC_DIR="$DEFAULT_SRC_DIR"
 if [ "$ACTION" -eq 2 ]; then
-    printf "\n${BOLD}Step 4/4 — Build Dependencies & Source Directory${RESET}\n"
+    printf "\n${BOLD}Step 4/4 - Build Dependencies & Source Directory${RESET}\n"
     if prompt_yn "Install/verify required build packages (dkms, git, bc, kernel headers)?" "y"; then
         DO_DEPS=1
     fi
@@ -199,7 +199,7 @@ if [ "$ACTION" -eq 2 ]; then
     IFS= read -r custom_dir < /dev/tty || custom_dir=""
     SRC_DIR="${custom_dir:-$DEFAULT_SRC_DIR}"
 else
-    printf "\n${BOLD}Step 4/4 — Confirm Summary${RESET}\n"
+    printf "\n${BOLD}Step 4/4 - Confirm Summary${RESET}\n"
 fi
 
 # --- Summary & Confirmation ---------------------------------------------------
@@ -244,7 +244,7 @@ install_deps() {
         sudo zypper install -y -t pattern devel_kernel
         sudo zypper install -y dkms git bc
     else
-        warn "Unrecognized package manager — ensure kernel headers, dkms, git, bc, and your compiler are installed."
+        warn "Unrecognized package manager - ensure kernel headers, dkms, git, bc, and your compiler are installed."
     fi
 }
 
@@ -296,7 +296,7 @@ if prompt_yn "Reload the 8852cu kernel module now (no reboot needed)?" "y"; then
         dkms status rtl8852cu || true
     fi
 else
-    info "Skipped module reload — reboot or replug your USB WiFi adapter to activate."
+    info "Skipped module reload - reboot or replug your USB WiFi adapter to activate."
 fi
 
 printf "\n${GREEN}${BOLD}All done!${RESET} 73 de 9M2PJU 📻  ${DIM}https://github.com/9M2PJU/rtl8852cu-9M2PJU-dkms${RESET}\n\n"

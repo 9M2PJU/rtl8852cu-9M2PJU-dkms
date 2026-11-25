@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# rtl8852cu-9M2PJU-dkms — Interactive Wi-Fi 6 / 5 GHz / 2.4 GHz AP Mode Script
+# rtl8852cu-9M2PJU-dkms - Interactive Wi-Fi 6 / 5 GHz / 2.4 GHz AP Mode Script
 # Repository: https://github.com/9M2PJU/rtl8852cu-9M2PJU-dkms
 # Maintainer: 9M2PJU (https://hamradio.my)
 #
@@ -189,7 +189,7 @@ if [ ! -e /dev/tty ]; then
 fi
 
 printf "\n${CYAN}╭──────────────────────────────────────────────────────────────╮${RESET}\n"
-printf "${CYAN}│${RESET}  ${BOLD}📡 rtl8852cu-9M2PJU-dkms — Interactive AP / Hotspot Wizard${RESET}  ${CYAN}│${RESET}\n"
+printf "${CYAN}│${RESET}  ${BOLD}📡 rtl8852cu-9M2PJU-dkms - Interactive AP / Hotspot Wizard${RESET}  ${CYAN}│${RESET}\n"
 printf "${CYAN}│${RESET}  ${DIM}Wi-Fi 6 (802.11ax) • 5 GHz / 2.4 GHz • NAT Internet Sharing${RESET} ${CYAN}│${RESET}\n"
 printf "${CYAN}╰──────────────────────────────────────────────────────────────╯${RESET}\n\n"
 
@@ -231,7 +231,7 @@ if [ -n "$HE_PARAM" ] && { [ "$HE_PARAM" != "2" ] || [ "$VHT_PARAM" != "2" ]; };
     fi
 fi
 
-printf "\n${BOLD}Step 1/6 — Interface & Backend${RESET}\n"
+printf "\n${BOLD}Step 1/6 - Interface & Backend${RESET}\n"
 AP_IFACE="$(prompt_str "AP wireless interface:" "$DEFAULT_IFACE")"
 
 HAS_HOSTAPD=0
@@ -241,9 +241,9 @@ command -v hostapd >/dev/null 2>&1 && HAS_HOSTAPD=1
 command -v dnsmasq >/dev/null 2>&1 && HAS_DNSMASQ=1
 command -v nmcli   >/dev/null 2>&1 && HAS_NMCLI=1
 
-printf "   1) ${BOLD}hostapd + dnsmasq${RESET} — Full Wi-Fi 6 (802.11ax), 80 MHz, WPA2/WPA3 %s\n" \
+printf "   1) ${BOLD}hostapd + dnsmasq${RESET} - Full Wi-Fi 6 (802.11ax), 80 MHz, WPA2/WPA3 %s\n" \
     "$([ "$HAS_HOSTAPD" -eq 1 ] && [ "$HAS_DNSMASQ" -eq 1 ] && echo "[Ready]" || echo "[Requires hostapd + dnsmasq]")"
-printf "   2) ${BOLD}NetworkManager (nmcli)${RESET} — Quick hotspot, zero extra config %s\n" \
+printf "   2) ${BOLD}NetworkManager (nmcli)${RESET} - Quick hotspot, zero extra config %s\n" \
     "$([ "$HAS_NMCLI" -eq 1 ] && echo "[Ready]" || echo "[nmcli not found]")"
 DEFAULT_BACKEND="$( [ "$HAS_HOSTAPD" -eq 1 ] && [ "$HAS_DNSMASQ" -eq 1 ] && echo 1 || echo 2 )"
 BACKEND_CHOICE="$(prompt_choice "Select AP backend (1-2):" "$DEFAULT_BACKEND" "2")"
@@ -268,20 +268,20 @@ if [ "$BACKEND_CHOICE" -eq 1 ] && { [ "$HAS_HOSTAPD" -eq 0 ] || [ "$HAS_DNSMASQ"
     fi
 fi
 
-printf "\n${BOLD}Step 2/6 — Network Name (SSID) & Password${RESET}\n"
+printf "\n${BOLD}Step 2/6 - Network Name (SSID) & Password${RESET}\n"
 AP_SSID="$(prompt_str "Wi-Fi SSID:" "9M2PJU-AX-AP")"
 while true; do
-    AP_PASS="$(prompt_str "WPA2/WPA3 Password (8–63 chars):" "9m2pju1234")"
+    AP_PASS="$(prompt_str "WPA2/WPA3 Password (8-63 chars):" "9m2pju1234")"
     if [ "${#AP_PASS}" -ge 8 ] && [ "${#AP_PASS}" -le 63 ]; then
         break
     fi
     warn "Password must be between 8 and 63 characters."
 done
 
-printf "\n${BOLD}Step 3/6 — Band & Channel${RESET}\n"
-printf "   1) ${BOLD}5 GHz Wi-Fi 6 (80 MHz, ch 36)${RESET} — Fastest (Recommended)\n"
-printf "   2) ${BOLD}5 GHz Wi-Fi 6 (80 MHz, ch 149)${RESET} — Upper 5 GHz (non-DFS)\n"
-printf "   3) ${BOLD}2.4 GHz Wi-Fi 6 (20 MHz, ch 6)${RESET} — Best range / IoT compatibility\n"
+printf "\n${BOLD}Step 3/6 - Band & Channel${RESET}\n"
+printf "   1) ${BOLD}5 GHz Wi-Fi 6 (80 MHz, ch 36)${RESET} - Fastest (Recommended)\n"
+printf "   2) ${BOLD}5 GHz Wi-Fi 6 (80 MHz, ch 149)${RESET} - Upper 5 GHz (non-DFS)\n"
+printf "   3) ${BOLD}2.4 GHz Wi-Fi 6 (20 MHz, ch 6)${RESET} - Best range / IoT compatibility\n"
 BAND_CHOICE="$(prompt_choice "Select band & channel (1-3):" "1" "3")"
 
 case "$BAND_CHOICE" in
@@ -290,19 +290,19 @@ case "$BAND_CHOICE" in
     3) HW_MODE="g"; CHANNEL="6";   CENTR_IDX="0";   BAND_LABEL="2.4 GHz (20 MHz)"; NM_BAND="bg" ;;
 esac
 
-printf "\n${BOLD}Step 4/6 — Country Code & Security${RESET}\n"
+printf "\n${BOLD}Step 4/6 - Country Code & Security${RESET}\n"
 COUNTRY="$(prompt_str "Regulatory country code (2-letter ISO, e.g. MY, US, GB, DE):" "MY")"
 COUNTRY="${COUNTRY^^}"
 
 SEC_CHOICE=1
 if [ "$BACKEND_CHOICE" -eq 1 ]; then
-    printf "   1) ${BOLD}WPA2-PSK (AES/CCMP)${RESET} — Maximum device compatibility (Recommended)\n"
-    printf "   2) ${BOLD}WPA2/WPA3 Mixed (SAE + PSK)${RESET} — Modern devices + legacy fallback\n"
-    printf "   3) ${BOLD}WPA3-SAE Only${RESET} — Strict WPA3\n"
+    printf "   1) ${BOLD}WPA2-PSK (AES/CCMP)${RESET} - Maximum device compatibility (Recommended)\n"
+    printf "   2) ${BOLD}WPA2/WPA3 Mixed (SAE + PSK)${RESET} - Modern devices + legacy fallback\n"
+    printf "   3) ${BOLD}WPA3-SAE Only${RESET} - Strict WPA3\n"
     SEC_CHOICE="$(prompt_choice "Select security mode (1-3):" "1" "3")"
 fi
 
-printf "\n${BOLD}Step 5/6 — Internet Sharing (NAT)${RESET}\n"
+printf "\n${BOLD}Step 5/6 - Internet Sharing (NAT)${RESET}\n"
 DEFAULT_UP="$(detect_default_upstream || true)"
 [ "$DEFAULT_UP" = "$AP_IFACE" ] && DEFAULT_UP=""
 SHARE_NET=0
@@ -314,7 +314,7 @@ if prompt_yn "Share internet from another interface (NAT routing)?" "$([ -n "$DE
     UPSTREAM_IFACE="$(prompt_str "Upstream internet interface:" "${DEFAULT_UP:-wlan0}")"
 fi
 
-printf "\n${BOLD}Step 6/6 — Confirm & Launch${RESET}\n"
+printf "\n${BOLD}Step 6/6 - Confirm & Launch${RESET}\n"
 printf "\n${CYAN}┌─ AP Configuration Summary ──────────────────────────────────┐${RESET}\n"
 printf "│  Backend   : %s\n" "$([ "$BACKEND_CHOICE" -eq 1 ] && echo "hostapd + dnsmasq (Wi-Fi 6)" || echo "NetworkManager (nmcli)")"
 printf "│  Interface : %s\n" "$AP_IFACE"
@@ -483,7 +483,7 @@ fi
 
 # Start dnsmasq
 dnsmasq --conf-file="$DNSMASQ_CONF"
-ok "DHCP/DNS server running (${AP_SUBNET}.10–200)"
+ok "DHCP/DNS server running (${AP_SUBNET}.10-200)"
 
 # Show QR code if qrencode is available
 if command -v qrencode >/dev/null 2>&1; then
